@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>送给杨欣怡宝宝的生日祝福 🎂</title>
+
+<style>
+/* ====== Reset & Base ====== */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Comic Sans MS","Segoe UI","PingFang SC","微软雅黑",system-ui,sans-serif;
+  background:#fff0f5;color:#333;overflow:hidden;
+}
+/* ====== Layout ====== */
+.container{position:relative;width:100%;height:100%}
+.bg-wrapper{position:absolute;inset:0;overflow:hidden}
+.bg-photo{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  max-width:120%;max-height:120%;filter:brightness(.85);
+  transition:transform .8s ease;user-select:none;-webkit-user-drag:none
+}
+.bg-photo:hover{transform:translate(-50%,-50%) scale(1.04)}
+.overlay{position:absolute;inset:0;background:rgba(255,240,245,.55);pointer-events:none}
+.content{
+  position:relative;z-index:2;width:min(860px,92vw);margin:0 auto;text-align:center;
+  top:18%;padding:0 12px
+}
+h1{font-size:clamp(24px,5vw,38px);color:#c71585;letter-spacing:.5px;margin-bottom:.8rem;opacity:0;transform:translateY(-6px)}
+.message{font-size:clamp(16px,3.8vw,22px);color:#7a0033;line-height:1.75;min-height:6.5em;opacity:0;transform:translateY(6px)}
+.btns{margin-top:1.1rem;display:inline-flex;gap:.6rem}
+/* ====== Buttons ====== */
+.btn{
+  padding:12px 22px;border:none;border-radius:999px;font-size:16px;cursor:pointer;
+  box-shadow:0 6px 18px rgba(255,135,171,.35);
+  transition:transform .12s ease,box-shadow .12s ease,background .2s ease;user-select:none
+}
+.btn:active{transform:translateY(1px) scale(.97)}
+.btn.primary{background:#ff87ab;color:#fff}
+.btn.primary:hover{box-shadow:0 10px 24px rgba(255,135,171,.55)}
+.btn.ghost{background:#ffe3ec;color:#b2185c}
+.btn.ghost:hover{box-shadow:0 10px 24px rgba(255,195,215,.55)}
+.btn-top{
+  position:fixed;right:18px;bottom:26px;z-index:3;width:44px;height:44px;border-radius:50%;
+  border:none;background:#ffc0cb;color:#7a0033;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.15);
+  cursor:pointer;opacity:0;transition:opacity .35s ease
+}
+/* ====== Particles ====== */
+.heart,.star{position:absolute;pointer-events:none}
+.heart{width:16px;height:16px;background:#ff4d6d;transform:rotate(45deg);opacity:0}
+.heart::before,.heart::after{content:"";position:absolute;width:16px;height:16px;background:#ff4d6d;border-radius:50%}
+.heart::before{top:-8px;left:0}.heart::after{left:8px;top:0}
+.star{width:4px;height:4px;background:#fff;border-radius:50%;box-shadow:0 0 8px #fff,0 0 14px rgba(255,255,255,.75);opacity:0}
+/* ====== Toast ====== */
+.toast{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+  background:rgba(0,0,0,.72);color:#fff;padding:10px 14px;border-radius:12px;
+  font-size:14px;letter-spacing:.3px;z-index:4;opacity:0;pointer-events:none;
+  transition:opacity .25s ease,transform .25s ease
+}
+.toast.show{opacity:1;transform:translate(-50%,-4px)}
+/* ====== Reveal ====== */
+.reveal{opacity:1 !important;transform:none !important}
+@media (max-height:640px){.content{top:12%}}
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="bg-wrapper">
+      <!-- 默认尝试 assets/your_photo.jpg；失败会自动换 assets/photo.jpg -->
+      <img class="bg-photo" id="bgPhoto" src="assets/your_photo.jpg" alt="宝贝照片" />
+      <div class="overlay"></div>
+    </div>
+
+    <main class="content">
+      <h1 id="title">给杨欣怡宝宝</h1>
+      <p id="message" class="message" aria-live="polite"></p>
+      <div class="btns">
+        <button class="btn primary" id="btnPlay" aria-pressed="false">播放音乐 🎵</button>
+        <button class="btn ghost" id="btnBurst">再来点特效 ✨</button>
+      </div>
+    </main>
+
+    <button class="btn-top" id="btnTop" title="回到顶部">↑</button>
+  </div>
+
+  <!-- 音乐：默认尝试 assets/birthday_song.mp3；失败自动换 assets/music.mp3；再失败自动显示原生控件 -->
+  <audio id="bgm" preload="auto" loop></audio>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ================== 可改的配置 ================== */
+const CONF = {
+  // 若你执意用绝对路径（仅本机生效），把下面改为 true，并填你的路径（注意 file:/// 和正斜杠）
+  USE_ABSOLUTE: false,
+  ABS_IMG: "file:///C:/Users/admin/Desktop/birthday_wish/assets/your_photo.jpg",
+  ABS_MP3: "file:///C:/Users/admin/Desktop/birthday_wish/assets/birthday_song.mp3",
+
+  // 相对路径（推荐，方便打包&上线）
+  IMG_TRY: ["assets/your_photo.jpg", "assets/photo.jpg"],
+  MP3_TRY: ["assets/birthday_song.mp3", "assets/music.mp3"],
+
+  LINES: [
+    "亲爱的杨欣怡宝宝，",
+    "今天是你的生日，我想对你说：",
+    "愿你笑颜常在，幸福如影随形；",
+    "愿你的每个愿望，都被温柔对待；",
+    "未来的路，我们一起慢慢走～",
+    "生日快乐！我最最爱你 💖"
+  ]
+};
+
+/* ================== 小工具 ================== */
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function toast(msg, ms=1800){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),ms);}
+
+/* ================== 资源加载（含容错） ================== */
+(function setupMedia(){
+  const img = $("#bgPhoto");
+  const audio = $("#bgm");
+
+  if (CONF.USE_ABSOLUTE) {
+    img.src = CONF.ABS_IMG;
+    audio.src = CONF.ABS_MP3;
+  } else {
+    // 图片尝试：your_photo.jpg → photo.jpg
+    img.addEventListener("error", function onErr(){
+      if (img.src.endsWith(CONF.IMG_TRY[0])) img.src = CONF.IMG_TRY[1];
+      img.removeEventListener("error", onErr);
+    });
+    // 音乐尝试：birthday_song.mp3 → music.mp3
+    let triedAlt = false;
+    audio.src = CONF.MP3_TRY[0];
+    audio.addEventListener("error", function onErr(){
+      if (!triedAlt) { triedAlt = true; audio.src = CONF.MP3_TRY[1]; audio.load(); }
+      else { audio.setAttribute("controls",""); toast("未找到音乐，已显示播放器控件～"); }
+    });
+  }
+})();
+
+/* ================== 打字机 ================== */
+async function typeWriter(el, lines, speed=55){
+  el.innerHTML=""; for(let i=0;i<lines.length;i++){const t=lines[i];
+    for(let j=0;j<t.length;j++){el.innerHTML+=t[j]; await sleep(speed);}
+    if(i<lines.length-1){el.innerHTML+="<br/>"; await sleep(260);}
+  }
+}
+
+/* ================== 粒子特效 ================== */
+function createHeart(){
+  const h=document.createElement("div"); h.className="heart";
+  const size=Math.random()*18+12; h.style.width=h.style.height=size+"px";
+  h.style.left=Math.random()*window.innerWidth+"px"; h.style.top=window.innerHeight+20+"px";
+  document.body.appendChild(h);
+  let top=window.innerHeight+20; const speed=1+Math.random()*1.5; const drift=(Math.random()-.5)*1.6;
+  (function step(){ top-=speed; h.style.top=top+"px"; h.style.left=(parseFloat(h.style.left)+drift)+"px";
+    h.style.opacity=Math.max(0, top/window.innerHeight);
+    top<-40 ? h.remove() : requestAnimationFrame(step);
+  })();
+}
+function createStar(){
+  const s=document.createElement("div"); s.className="star";
+  s.style.left=Math.random()*window.innerWidth+"px"; s.style.top=Math.random()*window.innerHeight+"px";
+  document.body.appendChild(s); s.style.transition="opacity 1s ease-in-out";
+  requestAnimationFrame(()=>s.style.opacity=1); setTimeout(()=>{s.style.opacity=0; setTimeout(()=>s.remove(),900);},260);
+}
+
+/* ================== 音乐控制（带调试&降级） ================== */
+const audio=$("#bgm"), btnPlay=$("#btnPlay");
+["loadstart","loadedmetadata","canplay","canplaythrough","play","pause","error"].forEach(ev=>{
+  audio.addEventListener(ev,()=>console.log("[AUDIO]",ev,{readyState:audio.readyState,error:audio.error}));
+});
+async function togglePlay(){
+  try{
+    audio.muted=false; audio.volume=1;
+    if(audio.paused){ await audio.play(); btnPlay.textContent="暂停音乐 🎵"; btnPlay.setAttribute("aria-pressed","true"); toast("音乐已播放～"); }
+    else{ audio.pause(); btnPlay.textContent="播放音乐 🎵"; btnPlay.setAttribute("aria-pressed","false"); }
+  }catch(e){ console.error(e); toast("播放失败：请检查音乐路径或手动允许声音"); audio.setAttribute("controls",""); }
+}
+
+/* ================== 交互绑定 & 初始化 ================== */
+window.addEventListener("load", async ()=>{
+  $("#title").classList.add("reveal"); await sleep(400); $("#message").classList.add("reveal");
+  typeWriter($("#message"), CONF.LINES, 55);
+
+  // 粒子
+  setInterval(createHeart, 900);
+  setInterval(createStar, 420);
+
+  // 按钮
+  btnPlay.addEventListener("click", togglePlay);
+  $("#btnBurst").addEventListener("click", ()=>{
+    for(let i=0;i<22;i++) setTimeout(createHeart,i*36);
+    for(let i=0;i<36;i++) setTimeout(createStar,i*18);
+  });
+
+  // 返回顶部（本页基本不滚动，但以防万一）
+  const btnTop=$("#btnTop");
+  const toggleTop=()=>window.pageYOffset>80 ? btnTop.style.opacity=1 : btnTop.style.opacity=0;
+  document.addEventListener("scroll",toggleTop);
+  btnTop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+});
+</script>
+</body>
+</html>
